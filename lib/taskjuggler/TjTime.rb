@@ -13,6 +13,7 @@
 
 require 'time'
 require 'date'
+require 'active_support/time'
 
 class TaskJuggler
 
@@ -60,28 +61,8 @@ class TaskJuggler
     def TjTime.checkTimeZone(zone)
       return true if zone == 'UTC'
 
-      # Valid time zones must be of the form 'Region/City'
-      return false unless zone.include?('/')
-
-      # Save curent value of TZ
-      tz = ENV['TZ']
-      ENV['TZ'] = zone
-      newZone = Time.new.zone
-      # If the time zone is valid, the OS can convert a zone like
-      # 'America/Denver' into 'MST'. Unknown time zones are either not
-      # converted or cause a fallback to UTC.
-      # Since glibc 2.10 Time.new.zone only return the region for illegal
-      # zones instead of the full zone string like it does on earlier
-      # versions.
-      region = zone[0..zone.index('/') - 1]
-      res = (newZone != zone && newZone != region && newZone != 'UTC')
-      # Restore TZ if it was set earlier.
-      if tz
-        ENV['TZ'] = tz
-      else
-        ENV.delete('TZ')
-      end
-      res
+      return true if ActiveSupport::TimeZone::MAPPING.has_value?(zone)
+      return false
     end
 
     # Set a new active time zone. _zone_ must be a valid String known to the
