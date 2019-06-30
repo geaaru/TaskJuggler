@@ -465,6 +465,7 @@ EOT
         debug('', "Loading project for tag #{tag}")
       end
       pr = ProjectRecord.new(tag)
+      debug('', 'Starting Project server')
       ps = ProjectServer.new(@authKey, project, @logStdIO)
       # The ProjectServer can be reached via this DRb URI
       pr.uri = ps.uri
